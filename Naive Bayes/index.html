@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naive Bayes Classifier 🌌</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: #000000;
+            color: #e0e0e0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
+        .header, .footer {
+            background: #16213e;
+            color: white;
+            padding: 15px;
+            font-size: 22px;
+            font-weight: bold;
+            width: 100%;
+            position: absolute;
+        }
+
+        .header {
+            top: 0;
+        }
+
+        .footer {
+            bottom: 0;
+        }
+
+        .container {
+            background: #0f3460;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 550px;
+            color: #ffffff;
+            position: relative;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.08), transparent 70%);
+            border-radius: 12px;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        h1 {
+            color: #e94560;
+            font-size: 28px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #b5b5b5;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #1b1b3a;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        input {
+            width: 150px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            border: 2px solid #e94560;
+            font-size: 16px;
+            background: #1b1b3a;
+            color: #ffffff;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: linear-gradient(90deg, #e94560, #ff3366);
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 20px;
+            box-shadow: 3px 3px 15px rgba(233, 69, 96, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #ff3366, #e94560);
+            box-shadow: 5px 5px 20px rgba(255, 51, 102, 0.6);
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 22px;
+            color: #e94560;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🌌 Naive Bayes Classifier - Flower Prediction 🌌</div>
+    
+    <div class="container">
+        <h1>🔬 Predict the Flower Species</h1>
+        <p>Enter the flower's characteristics to classify its species.</p>
+        <p class="description">This model uses the Naive Bayes algorithm, a probabilistic classifier.</p>
+        
+        <div class="input-container">
+            <div class="input-box">
+                <label for="sepal_length">Sepal Length (cm):</label>
+                <input type="text" id="sepal_length">
+            </div>
+            <div class="input-box">
+                <label for="sepal_width">Sepal Width (cm):</label>
+                <input type="text" id="sepal_width">
+            </div>
+            <div class="input-box">
+                <label for="petal_length">Petal Length (cm):</label>
+                <input type="text" id="petal_length">
+            </div>
+            <div class="input-box">
+                <label for="petal_width">Petal Width (cm):</label>
+                <input type="text" id="petal_width">
+            </div>
+        </div>
+        
+        <button onclick="predict()">🌺 Classify</button>
+        <h2 id="result"></h2>
+    </div>
+    
+    <div class="footer">Developed by Ankita Satapathy | 22053400</div>
+
+    <script>
+        async function predict() {
+            let features = [];
+            let featureIds = ["sepal_length", "sepal_width", "petal_length", "petal_width"];
+            for (let id of featureIds) {
+                let value = document.getElementById(id).value;
+                if (value === "" || isNaN(value)) {
+                    document.getElementById("result").innerText = "⚠️ Please enter valid numbers!";
+                    return;
+                }
+                features.push(parseFloat(value));
+            }
+            try {
+                let response = await fetch("http://127.0.0.1:8000/predict/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ features: features })
+                });
+                if (!response.ok) {
+                    throw new Error("🚨 Server error! Try again.");
+                }
+                let data = await response.json();
+                let classNames = ["🌸 Setosa", "🌿 Versicolor", "🌺 Virginica"];
+                let className = classNames[data.prediction];
+                document.getElementById("result").innerText = "🎉 Predicted Flower Species: " + className;
+            } catch (error) {                   
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "❌ Error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
