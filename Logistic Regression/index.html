@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breast Cancer Prediction</title>
+    
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #000000, #b8860b);
+            margin: 0;
+            color: #fff;
+            text-align: center;
+        }
+        .header, .footer {
+            width: 100%;
+            padding: 15px;
+            text-align: center;
+            background: #b8860b;
+            color: black;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 5px 20px rgba(255, 215, 0, 0.5);
+            text-align: left;
+            max-width: 500px;
+        }
+        h1 {
+            color: #b8860b;
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+        }
+        p {
+            font-size: 18px;
+            color: #d3d3d3;
+            text-align: justify;
+        }
+        label {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #b8860b;
+            border-radius: 6px;
+            font-size: 18px;
+            background: #222;
+            color: #fff;
+            margin-right: 10px;
+        }
+        button {
+            background-color: #b8860b;
+            color: black;
+            border: none;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.3s;
+            box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.5);
+        }
+        button:hover {
+            background-color: #daa520;
+        }
+        h2 {
+            margin-top: 20px;
+            font-size: 22px;
+            color: #b8860b;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Breast Cancer Prediction</div>
+    
+    <div class="container">
+        <h1>Welcome to Breast Cancer Prediction</h1>
+        <p>This tool helps predict breast cancer likelihood based on the mean radius of the tumor. Enter the value below to receive a prediction.</p>
+        <label for="mean_radius">Enter Mean Radius:</label>
+        <div class="input-group">
+            <input type="number" id="mean_radius" step="0.01" placeholder="Enter Mean Radius">
+            <button onclick="predict()">Predict</button>
+        </div>
+        <h2 id="result"></h2>
+    </div>
+    
+    <div class="footer">Ankita Satapathy, 22053400</div>
+
+    <script>
+        function predict() {
+            let meanRadiusValue = document.getElementById("mean_radius").value;
+            
+            fetch("http://127.0.0.1:8000/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ mean_radius: parseFloat(meanRadiusValue) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let resultText = data.prediction === 1 ? "Malignant (Cancerous)" : "Benign (Non-Cancerous)";
+                document.getElementById("result").innerText = 
+                    "Prediction: " + resultText + " (Probability: " + data.probability + ")";
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</body>
+</html>
