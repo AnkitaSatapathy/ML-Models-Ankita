@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏡 California Housing Price Predictor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #3E1E68, #8E44AD);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header, footer {
+            background: linear-gradient(90deg, #8E44AD, #3E1E68);
+            padding: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+            color: #333;
+            text-align: center;
+            margin: 30px auto;
+            flex-grow: 1;
+        }
+
+        h2 {
+            font-size: 28px;
+            color: #8E44AD;
+            margin-bottom: 20px;
+        }
+
+        .input-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+            color: #8E44AD;
+        }
+
+        input {
+            width: 100%;
+            max-width: 250px;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #8E44AD;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 1);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #8E44AD, #3E1E68);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 3px 3px 15px rgba(142, 68, 173, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #3E1E68, #8E44AD);
+            box-shadow: 5px 5px 20px rgba(142, 68, 173, 0.6);
+            transform: translateY(-2px);
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #8E44AD;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+
+        footer {
+            padding: 30px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 30px;
+            }
+
+            .input-container {
+                grid-template-columns: 1fr;
+            }
+
+            header, footer {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>🏡 California Housing Price Predictor</header>
+    <div class="container">
+        <h2>Enter Details to Predict House Price</h2>
+        <p>This project utilizes advanced machine learning models to estimate house prices in California.</p>
+
+        <form id="predictForm">
+            <div class="input-container">
+                <div class="input-box">
+                    <label for="feature1">Median Income:</label>
+                    <input type="number" id="feature1">
+                </div>
+                <div class="input-box">
+                    <label for="feature2">House Age:</label>
+                    <input type="number" id="feature2">
+                </div>
+                <div class="input-box">
+                    <label for="feature3">Average Rooms:</label>
+                    <input type="number" id="feature3">
+                </div>
+                <div class="input-box">
+                    <label for="feature4">Average Bedrooms:</label>
+                    <input type="number" id="feature4">
+                </div>
+                <div class="input-box">
+                    <label for="feature5">Population:</label>
+                    <input type="number" id="feature5">
+                </div>
+                <div class="input-box">
+                    <label for="feature6">AveOccup:</label>
+                    <input type="number" id="feature6">
+                </div>
+                <div class="input-box">
+                    <label for="feature7">Latitude:</label>
+                    <input type="number" id="feature7">
+                </div>
+                <div class="input-box">
+                    <label for="feature8">Longitude:</label>
+                    <input type="number" id="feature8">
+                </div>
+            </div>
+
+            <button type="submit">📊 Predict Price</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <footer>
+        <h3>👩‍💻 Developed by Ankita Satapathy | 22053400</h3>
+    </footer>
+
+    <script>
+        document.getElementById("predictForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const features = [
+                parseFloat(document.getElementById("feature1").value),
+                parseFloat(document.getElementById("feature2").value),
+                parseFloat(document.getElementById("feature3").value),
+                parseFloat(document.getElementById("feature4").value),
+                parseFloat(document.getElementById("feature5").value),
+                parseFloat(document.getElementById("feature6").value),
+                parseFloat(document.getElementById("feature7").value),
+                parseFloat(document.getElementById("feature8").value)
+            ];
+            console.log("📤 Sending data:", features);
+            try {
+                const response = await fetch("http://127.0.0.1:8000/predict/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ features })
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const result = await response.json();
+                document.getElementById("result").innerHTML = 
+                    `<strong>🏠 Predicted House Price:</strong> $${result.predicted_price * 1000}`;
+            } catch (error) {
+                console.error("❌ Fetch Error:", error);
+                document.getElementById("result").innerHTML = "❌ Error predicting. Check console.";
+            }
+        });
+    </script>
+
+</body>
+</html>
