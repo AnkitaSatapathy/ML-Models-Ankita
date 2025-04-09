@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Predictor 🏥</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #4B0000, #800000); 
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header, .footer {
+            background: #660000; 
+            color: white;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            width: 100%;
+            position: fixed;
+            text-align: center;
+        }
+
+        .header {
+            top: 0;
+        }
+
+        .footer {
+            bottom: 0;
+        }
+
+        .container {
+            background: rgba(255, 229, 204, 0.9); 
+            padding: 40px; 
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 600px; 
+            color: #4B0000; 
+            text-align: center;
+            margin-top: 90px;
+            margin-bottom: 90px;
+        }
+
+        h1 {
+            color: #FF5733; 
+            font-size: 30px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        .input-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 16px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #FF5733; 
+        }
+
+        input {
+            width: 140px; 
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            border: 2px solid #FF5733; 
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #4B0000;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+
+        button {
+            padding: 14px 26px;
+            background: linear-gradient(90deg, #FF5733, #FFA07A); 
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 25px;
+            box-shadow: 3px 3px 15px rgba(255, 87, 51, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #FFA07A, #FF5733);
+            box-shadow: 5px 5px 20px rgba(255, 87, 51, 0.6);
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            margin-top: 20px;
+            font-size: 24px;
+            color: #FF5733; 
+        }
+
+        #result {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #8B0000; 
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: 95%;
+                padding: 25px;
+            }
+
+            .input-container {
+                grid-template-columns: 1fr;
+            }
+
+            .input-box {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🏥 Diabetes Predictor - Check Your Risk</div>
+
+    <div class="container">
+        <h1>🏥 Diabetes Predictor</h1>
+        <p>Enter your details to check diabetes risk.</p>
+
+        <div class="input-container">
+            <div class="input-box">
+                <label for="feature0">Age:</label>
+                <input type="number" id="feature0">
+            </div>
+            <div class="input-box">
+                <label for="feature1">BMI:</label>
+                <input type="number" id="feature1">
+            </div>
+            <div class="input-box">
+                <label for="feature2">Glucose Level:</label>
+                <input type="number" id="feature2">
+            </div>
+            <div class="input-box">
+                <label for="feature3">Blood Pressure:</label>
+                <input type="number" id="feature3">
+            </div>
+        </div>
+
+        <button onclick="predict()">🔍 Predict</button>
+        <h2 id="result"></h2>
+    </div>
+
+    <div class="footer">Developed by Ankita Satapathy | 22053400</div>
+
+    <script>
+        async function predict() {
+            let features = [];
+            let featureIds = ["feature0", "feature1", "feature2", "feature3"];
+            for (let id of featureIds) {
+                let value = document.getElementById(id).value;
+                if (value === "" || isNaN(value)) {
+                    document.getElementById("result").innerText = "⚠️ Enter valid numbers!";
+                    return;
+                }
+                features.push(parseFloat(value));
+            }
+            try {
+                let response = await fetch("http://127.0.0.1:8000/predict/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ features: features })
+                });
+                let data = await response.json();
+                let diabetesStatus = data.prediction === 1 ? "✅ High Risk of Diabetes" : "❌ Low Risk of Diabetes";
+                document.getElementById("result").innerText = "🏥 Result: " + diabetesStatus;
+            } catch (error) {
+                document.getElementById("result").innerText = "❌ Error: " + error.message;
+            }
+        }
+    </script>       
+</body>
+</html>
