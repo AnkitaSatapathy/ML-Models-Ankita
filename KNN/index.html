@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penguins Classifier (KNN) 🐧</title>
+    <style>
+        body {
+            font-family: 'Verdana', sans-serif;
+            text-align: center;
+            margin: 20px;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            color: #333;
+        }
+        .header, .footer {
+            background: #ff6f61;
+            color: white;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .container {
+            background: #fff5e6;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #ff6f61;
+            font-size: 28px;
+        }
+        p {
+            font-size: 18px;
+        }
+        .input-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #ffe8d6;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 150px;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            border: 2px solid #ff6f61;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 24px;
+            background: #ff6f61;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #e65141;
+        }
+        h2 {
+            margin-top: 20px;
+            font-size: 22px;
+            color: #ff6f61;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">🐧 Penguin Species Predictor 🐧</div>
+    <div class="container">
+        <h1>🐧 Penguins Classifier (KNN) 🐧</h1>
+        <p>Enter feature values to classify the penguin species:</p>
+        <div class="input-container">
+            <div class="input-box">
+                <label for="feature0">Bill Length (mm):</label>
+                <input type="number" id="feature0">
+            </div>
+            <div class="input-box">
+                <label for="feature1">Bill Depth (mm):</label>
+                <input type="number" id="feature1">
+            </div>
+            <div class="input-box">
+                <label for="feature2">Flipper Length (mm):</label>
+                <input type="number" id="feature2">
+            </div>
+            <div class="input-box">
+                <label for="feature3">Body Mass (g):</label>
+                <input type="number" id="feature3">
+            </div>
+        </div>
+        <button onclick="predict()">🔍 Predict</button>
+        <h2 id="result"></h2>
+    </div>
+    <div class="footer">Developed by Ankita Satapathy | 22053400</div>
+    <script>
+        async function predict() {
+            let features = [];
+            for (let i = 0; i < 4; i++) {
+                let value = document.getElementById("feature" + i).value;
+                if (value === "" || isNaN(value)) {
+                    document.getElementById("result").innerText = "⚠️ Please enter valid numbers!";
+                    return;
+                }
+                features.push(parseFloat(value));
+            }
+            try {
+                let response = await fetch("http://127.0.0.1:8000/predict/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ features: features })
+                });
+                if (!response.ok) {
+                    throw new Error("🚨 Server error! Try again.");
+                }
+                let data = await response.json();
+                document.getElementById("result").innerText = "🎉 Predicted Penguin Species: " + data.prediction;
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "❌ Error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
